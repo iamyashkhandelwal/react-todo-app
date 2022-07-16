@@ -16,7 +16,7 @@ export default class App extends Component {
     let completedTodoList = localStorage.getItem('CompletedTodoItems') ? localStorage.getItem('CompletedTodoItems') : "[]";
     let filters = localStorage.getItem('filters') ? localStorage.getItem('filters') : "[]";
     let filteredList = localStorage.getItem('filteredTodoItems') ? localStorage.getItem('filteredTodoItems') : "[]";
-    
+
     this.setState({  
       activeTodos: JSON.parse(activeTodoList),
       completedTodos: JSON.parse(completedTodoList),
@@ -115,6 +115,19 @@ export default class App extends Component {
     )
   }
 
+  deleteTodos = () => {
+    this.setState({
+      activeTodos: [],
+      completedTodos: [],
+      filteredTodos: [],
+      hashtags: [],
+      filters: [],
+    },
+    () => {
+      localStorage.clear()
+    })
+  }
+
   getHashtags = (inp) => {
     return inp.match(/#[a-zA-Z0-9]+/gi);
   }
@@ -125,12 +138,12 @@ export default class App extends Component {
     // console.log('filteredTodos: ', this.state.filteredTodos);
     // console.log('hashtags: ', this.state.hashtags);
     // console.log('filters: ', this.state.filters);
-    const { hashtags, filters, filteredTodos, activeTodos, completedTodos } = this.state;
+    const { filters, filteredTodos, activeTodos, completedTodos } = this.state;
     return (
       <>
       <div>
         <input type="text" onKeyUp={this.handleOnSubmit}/>
-
+        <button onClick={this.deleteTodos}>Clear Todos</button>
         <div>
           <h4>Filters: 
             {filters.length > 0 && filters.map((filter, idx) => (<span key={idx} className='filters'>{filter}</span>))}
@@ -150,7 +163,6 @@ export default class App extends Component {
             <TodoCard 
               value={todo} 
               key={idx} 
-              hashtags={hashtags} 
               filterList={this.filterList}
               getHashtags={this.getHashtags}
               handleOnClickTodo={this.handleOnClickTodo}
@@ -163,7 +175,6 @@ export default class App extends Component {
               <TodoCard 
                 value={todo} 
                 key={idx} 
-                hashtags={hashtags} 
                 filterList={this.filterList}
                 getHashtags={this.getHashtags}
                 handleOnClickTodo={this.handleOnClickTodo}
@@ -176,7 +187,6 @@ export default class App extends Component {
             <TodoCard 
               value={todo} 
               key={idx} 
-              hashtags={hashtags} 
               filterList={this.filterList}
               getHashtags={this.getHashtags}
               handleOnClickTodo={this.handleOnClickTodo}
