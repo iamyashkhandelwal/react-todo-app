@@ -3,7 +3,6 @@ import TodoCard from './components/TodoCard';
 
 export default class App extends Component {
   state = {
-    // hashtags: [],   Not required
     activeTodos: [],
     completedTodos: [],
     filteredTodos: [],
@@ -28,20 +27,15 @@ export default class App extends Component {
   handleOnSubmit = (e) => {
     // on enter
     if(e.keyCode === 13) {
-      // let hashes = this.getHashtags(e.target.value) ? this.getHashtags(e.target.value) : [];
-      
-      // let uniqueHashes = [...this.state.hashtags, ...hashes].filter((value, index, self) => {
-      //   return self.indexOf(value) === index
-      // })
 
       this.setState({  
-        // hashtags: uniqueHashes,
         activeTodos: [e.target.value.trim(), ...this.state.activeTodos ]
        },
        () => {
         localStorage.setItem("ActiveTodoItems", JSON.stringify(this.state.activeTodos))
        }
       )
+      document.getElementById('inputBox').value = "";
     }
   }
 
@@ -82,18 +76,6 @@ export default class App extends Component {
         localStorage.setItem("filters", JSON.stringify(this.state.filters))
         let filteredList = [];
 
-        // this.state.activeTodos.forEach((todo) => {
-        //   let containAllFilters = this.state.filters.every((filter) => todo.includes(filter))
-        //   if(containAllFilters) {
-        //     filteredList.push(todo)
-        //   }
-        // })
-        // this.state.completedTodos.forEach((todo) => {
-        //   let containAllFilters = this.state.filters.every((filter) => todo.includes(filter))
-        //   if(containAllFilters) {
-        //     filteredList.push(todo)
-        //   }
-        // })
         this.state.activeTodos.forEach((todo) => {
           let hashes = this.getHashtags(todo) ? this.getHashtags(todo) : [];
           let containAllFilters = this.state.filters.every((filter) => hashes.includes(filter))
@@ -109,10 +91,6 @@ export default class App extends Component {
           }
         })
 
-        // to avoid duplicates
-        // let uniqueFilteredList = filteredList.filter((value, index, self) => {
-        //   return self.indexOf(value) === index
-        // })
         this.setState({ filteredTodos: filteredList },
           () => {
             localStorage.setItem("filteredTodoItems", JSON.stringify(this.state.filteredTodos))
@@ -147,16 +125,20 @@ export default class App extends Component {
   }
 
   render() {
-    // console.log('activeTodos: ', this.state.activeTodos);
-    // console.log('completedTodos: ', this.state.completedTodos);
-    // console.log('filteredTodos: ', this.state.filteredTodos);
-    // console.log('filters: ', this.state.filters);
+
     const { filters, filteredTodos, activeTodos, completedTodos } = this.state;
     return (
       <>
       <div className='container'>
-        <input type="text" onKeyUp={this.handleOnSubmit}/>
-        <button onClick={this.deleteTodos}>Reset</button>
+        <h1 className='heading'>Todo List</h1>
+        <input 
+          className='inputBox' 
+          id='inputBox' 
+          type="text" 
+          onKeyUp={this.handleOnSubmit}
+          disabled={filters.length}
+        />
+        <button className='resetBtn' onClick={this.deleteTodos}>Reset</button>
         <div>
           <h4>Filters: 
             {filters.length > 0 && filters.map((filter, idx) => (<span key={idx} className='filters'>{filter}</span>))}
@@ -216,28 +198,52 @@ export default class App extends Component {
         }
         .container {
           position: absolute;
-          top: 40%;
+          top: 45%;
           left: 50%;
           transform: translate(-50%, -50%);
+          width: 300px
+        }
+        .heading {
+          text-align: center;
+        }
+        .inputBox {
+          border: 1px solid black;
+          margin: 5px;
+          font-size: 16px;
+          padding: 5px;
+          width: 210px;
+        }
+        .resetBtn {
+          padding: 5px 10px;
+          margin-left: 5px;
+          cursor: pointer;
         }
         .taskList {
-          height: 200px;
-          max-height: 200px;
+          height: 300px;
+          max-height: 300px;
           border: 1px solid black;
           overflow-y: auto;
         }
         .todoItem {
-          color: blue;
+          color: brown;
+          font-size: 18px;
+          padding: 5px 10px;
+          cursor: pointer;
+          margin: 8px 0px;
+        }
+        .todoItem:hover {
+          background: lightgrey;
         }
         .completed {
           color: green !important;
         }
         .chips {
-            border: 1px solid black;
+            // border: 1px solid black;
             border-radius: 50px;
             color: red;
             cursor: pointer;
             padding: 5px 8px;
+            font-style: italic;
         }
         .chips:hover {
             background: grey;
