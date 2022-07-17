@@ -3,7 +3,7 @@ import TodoCard from './components/TodoCard';
 
 export default class App extends Component {
   state = {
-    hashtags: [],
+    // hashtags: [],   Not required
     activeTodos: [],
     completedTodos: [],
     filteredTodos: [],
@@ -28,14 +28,14 @@ export default class App extends Component {
   handleOnSubmit = (e) => {
     // on enter
     if(e.keyCode === 13) {
-      let hashes = this.getHashtags(e.target.value) ? this.getHashtags(e.target.value) : [];
+      // let hashes = this.getHashtags(e.target.value) ? this.getHashtags(e.target.value) : [];
       
-      let uniqueHashes = [...this.state.hashtags, ...hashes].filter((value, index, self) => {
-        return self.indexOf(value) === index
-      })
+      // let uniqueHashes = [...this.state.hashtags, ...hashes].filter((value, index, self) => {
+      //   return self.indexOf(value) === index
+      // })
 
       this.setState({  
-        hashtags: uniqueHashes,
+        // hashtags: uniqueHashes,
         activeTodos: [e.target.value.trim(), ...this.state.activeTodos ]
        },
        () => {
@@ -82,24 +82,38 @@ export default class App extends Component {
         localStorage.setItem("filters", JSON.stringify(this.state.filters))
         let filteredList = [];
 
+        // this.state.activeTodos.forEach((todo) => {
+        //   let containAllFilters = this.state.filters.every((filter) => todo.includes(filter))
+        //   if(containAllFilters) {
+        //     filteredList.push(todo)
+        //   }
+        // })
+        // this.state.completedTodos.forEach((todo) => {
+        //   let containAllFilters = this.state.filters.every((filter) => todo.includes(filter))
+        //   if(containAllFilters) {
+        //     filteredList.push(todo)
+        //   }
+        // })
         this.state.activeTodos.forEach((todo) => {
-          let containAllFilters = this.state.filters.every((filter) => todo.includes(filter))
+          let hashes = this.getHashtags(todo) ? this.getHashtags(todo) : [];
+          let containAllFilters = this.state.filters.every((filter) => hashes.includes(filter))
           if(containAllFilters) {
             filteredList.push(todo)
           }
         })
         this.state.completedTodos.forEach((todo) => {
-          let containAllFilters = this.state.filters.every((filter) => todo.includes(filter))
+          let hashes = this.getHashtags(todo) ? this.getHashtags(todo) : [];
+          let containAllFilters = this.state.filters.every((filter) => hashes.includes(filter))
           if(containAllFilters) {
             filteredList.push(todo)
           }
         })
 
         // to avoid duplicates
-        let uniqueFilteredList = filteredList.filter((value, index, self) => {
-          return self.indexOf(value) === index
-        })
-        this.setState({ filteredTodos: uniqueFilteredList },
+        // let uniqueFilteredList = filteredList.filter((value, index, self) => {
+        //   return self.indexOf(value) === index
+        // })
+        this.setState({ filteredTodos: filteredList },
           () => {
             localStorage.setItem("filteredTodoItems", JSON.stringify(this.state.filteredTodos))
           }
@@ -110,7 +124,7 @@ export default class App extends Component {
   removeFilters = () => {
     this.setState({ filters: [] },
       () => {
-        localStorage.setItem("filters", JSON.stringify([]))
+        localStorage.removeItem("filters")
       }
     )
   }
@@ -136,14 +150,13 @@ export default class App extends Component {
     // console.log('activeTodos: ', this.state.activeTodos);
     // console.log('completedTodos: ', this.state.completedTodos);
     // console.log('filteredTodos: ', this.state.filteredTodos);
-    // console.log('hashtags: ', this.state.hashtags);
     // console.log('filters: ', this.state.filters);
     const { filters, filteredTodos, activeTodos, completedTodos } = this.state;
     return (
       <>
-      <div>
+      <div className='container'>
         <input type="text" onKeyUp={this.handleOnSubmit}/>
-        <button onClick={this.deleteTodos}>Clear Todos</button>
+        <button onClick={this.deleteTodos}>Reset</button>
         <div>
           <h4>Filters: 
             {filters.length > 0 && filters.map((filter, idx) => (<span key={idx} className='filters'>{filter}</span>))}
@@ -156,7 +169,7 @@ export default class App extends Component {
           </button>
         </div>
 
-        <div>
+        <div className='taskList'>
           {filters.length > 0 ? 
 
           filteredTodos.map((todo, idx) => (
@@ -197,6 +210,22 @@ export default class App extends Component {
         </div>
       </div>
       <style>{`
+        body {
+          padding: 0px;
+          margin: 0px;
+        }
+        .container {
+          position: absolute;
+          top: 40%;
+          left: 50%;
+          transform: translate(-50%, -50%);
+        }
+        .taskList {
+          height: 200px;
+          max-height: 200px;
+          border: 1px solid black;
+          overflow-y: auto;
+        }
         .todoItem {
           color: blue;
         }
